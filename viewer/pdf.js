@@ -74,9 +74,45 @@ let pdf,
   fit = true,
   renderTask,
   textTask,
+  restoreScroll,
+  lastRenderedPage,
+  renderPending = false,
   revision = 0;
+addEventListener("message", (event) => {
+  if (event.source !== parent || event.data?.channel !== "paseo-doc-restore") return;
+  const view = event.data.view;
+  if (!view || typeof view !== "object") return;
+  if (Number.isSafeInteger(view.page) && view.page > 0) number = view.page;
+  if (Number.isFinite(view.pdfZoom) && view.pdfZoom >= 0.25 && view.pdfZoom <= 4)
+    scale = view.pdfZoom;
+  if (typeof view.pdfFit === "boolean") fit = view.pdfFit;
+  if (Number.isFinite(view.scrollX) && Number.isFinite(view.scrollY))
+    restoreScroll = { x: Math.max(0, view.scrollX), y: Math.max(0, view.scrollY) };
+  if (pdf) render();
+});
+parent.postMessage({ channel: "paseo-doc-initialized" }, "*");
+$("scroll").addEventListener(
+  "scroll",
+  () => {
+    parent.postMessage(
+      {
+        channel: "paseo-doc-view-state",
+        view: {
+          scrollX: $("scroll").scrollLeft,
+          scrollY: $("scroll").scrollTop,
+        },
+      },
+      "*",
+    );
+  },
+  { passive: true },
+);
 async function render() {
-  if (!pdf) return;
+  if (!pdf || $("scroll").clientWidth < 40) {
+    renderPending = true;
+    return;
+  }
+  renderPending = false;
   const rev = ++revision;
   renderTask?.cancel();
   textTask?.cancel();
@@ -120,6 +156,11 @@ async function render() {
       viewport,
     });
     await textTask.render();
+    if (restoreScroll) {
+      $("scroll").scrollTo(restoreScroll.x, restoreScroll.y);
+      restoreScroll = undefined;
+    } else if (lastRenderedPage !== number) $("scroll").scrollTo(0, 0);
+    lastRenderedPage = number;
     container.dataset.page = number;
     parent.postMessage(
       {
@@ -127,6 +168,11 @@ async function render() {
         page: number,
         pages: pdf.numPages,
         textItems: text.childElementCount,
+        scale,
+        fit,
+        scrollHeight: $("scroll").scrollHeight,
+        scrollViewport: $("scroll").clientHeight,
+        scrollTop: $("scroll").scrollTop,
       },
       "*",
     );
@@ -240,10 +286,15 @@ let resize;
 addEventListener("resize", () => {
   clearTimeout(resize);
   resize = setTimeout(() => {
-    if (fit) render();
+    if (fit || renderPending) render();
   }, 120);
 });
+const viewportObserver = new ResizeObserver(() => {
+  if (renderPending) render();
+});
+viewportObserver.observe($("scroll"));
 addEventListener("pagehide", () => {
+  viewportObserver.disconnect();
   renderTask?.cancel();
   textTask?.cancel();
   task.destroy();

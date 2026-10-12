@@ -1,6 +1,7 @@
 import { Platform } from "react-native";
 import { getPaseoClient } from "@getpaseo/plugin/client";
 import { isDocument, treePath } from "../shared/documents";
+import type { DocumentView } from "../shared/document-state";
 declare const navigator: { language: string };
 export function uiLanguage() {
   return Platform.OS === "web" && navigator.language.startsWith("ko") ? "ko" : "en";
@@ -70,6 +71,18 @@ export function writeLastDocument(key: string, path: string, page?: number) {
   } catch {}
 }
 
+export function readDocumentSessions(): unknown {
+  if (Platform.OS !== "web") return [];
+  try {
+    return JSON.parse(window.localStorage.getItem("paseo-document-tabs:v1") ?? "[]");
+  } catch {
+    return [];
+  }
+}
+export function writeDocumentSessions(value: unknown) {
+  if (Platform.OS === "web")
+    window.localStorage.setItem("paseo-document-tabs:v1", JSON.stringify(value));
+}
 export async function activeWorkspace(host: string): Promise<string> {
   if (Platform.OS !== "web") throw new Error("문서 뷰어는 데스크톱·웹에서 열 수 있습니다.");
   const parts = window.location.pathname.split("/").filter(Boolean);
@@ -156,6 +169,8 @@ export function mountDocument(
   asset: (kind: "cmaps" | "standard_fonts" | "wasm", name: string) => Promise<{ base64: string }>,
   open: (href: string) => void,
   onZoom: (scale: number) => void,
+  initialView?: DocumentView,
+  onView?: (view: Partial<DocumentView>) => void,
 ) {
   if (Platform.OS !== "web" || !host) return () => {};
   const frame = document.createElement("iframe");
@@ -172,9 +187,19 @@ export function mountDocument(
   frame.srcdoc = html;
   let alive = true;
   let requests = 0;
+  const restore = () =>
+    frame.contentWindow?.postMessage({ channel: "paseo-doc-restore", view: initialView }, "*");
   const message = (event: WebEvent) => {
     if (event.source !== frame.contentWindow || !event.data) return;
     const data = event.data;
+    if (data.channel === "paseo-doc-initialized") {
+      restore();
+      return;
+    }
+    if (data.channel === "paseo-doc-view-state" && data.view && typeof data.view === "object") {
+      onView?.(data.view as Partial<DocumentView>);
+      return;
+    }
     if (
       data.channel === "paseo-doc-zoom-state" &&
       typeof data.scale === "number" &&
@@ -199,6 +224,7 @@ export function mountDocument(
         if (typeof data[field] === "number")
           frame.setAttribute("data-" + field, String(data[field]));
       frame.setAttribute("data-ready", "true");
+      restore();
       frame.contentWindow?.postMessage(
         {
           channel: "paseo-doc-zoom",
@@ -218,6 +244,15 @@ export function mountDocument(
     ) {
       frame.setAttribute("data-page", String(data.page));
       frame.setAttribute("data-pages", String(data.pages));
+      if (typeof data.scale === "number") frame.setAttribute("data-pdf-zoom", String(data.scale));
+      for (const field of ["scrollHeight", "scrollViewport", "scrollTop"])
+        if (typeof data[field] === "number")
+          frame.setAttribute(`data-${field.toLowerCase()}`, String(data[field]));
+      onView?.({
+        page: Number(data.page),
+        pdfZoom: Number(data.scale),
+        pdfFit: typeof data.fit === "boolean" ? data.fit : undefined,
+      });
       if (typeof data.textItems === "number")
         frame.setAttribute("data-text-items", String(data.textItems));
       return;

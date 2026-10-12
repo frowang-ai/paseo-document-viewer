@@ -10,25 +10,40 @@ import {
   readDocumentChunk,
   readPdfAsset,
 } from "../shared/documents";
-import { currentDocument, selectDocument, selectionKey, subscribeDocuments } from "./store";
+import { documents } from "./store";
+import { documentKey } from "../shared/document-state";
 import { decodeChunks, mountDocument, updateHtmlZoom } from "./web";
 import { nextHtmlZoom } from "../shared/zoom";
 import { documentLink } from "../shared/documents";
 
-export function DocumentPanel({ host, workspaceId, theme, layout }: PluginWorkspacePanelProps) {
-  const key = selectionKey(host.id, workspaceId);
+type DocumentPanelProps = PluginWorkspacePanelProps & {
+  documentPath?: string;
+  onOpenDocument(path: string, page?: number): void;
+};
+export function DocumentPanel({
+  host,
+  workspaceId,
+  theme,
+  layout,
+  documentPath,
+  onOpenDocument,
+}: DocumentPanelProps) {
+  const key = documentPath ? documentKey(host.id, workspaceId, documentPath) : "";
   const selection = useSyncExternalStore(
-    subscribeDocuments,
-    () => currentDocument(key),
+    documents.subscribe,
+    () => documents.get(key),
     () => null,
   );
+  useEffect(() => {
+    if (documentPath) documents.open(host.id, workspaceId, documentPath);
+  }, [host.id, workspaceId, documentPath]);
+  const openRef = useRef(onOpenDocument);
+  openRef.current = onOpenDocument;
   const root = useWorkspace(workspaceId, (w) => w.directory);
   const [folder, setFolder] = useState(".");
-  const [files, setFiles] = useState(!selection);
-  const [htmlZoom, setHtmlZoom] = useState(1);
-  useEffect(() => {
-    if (selection?.path) setHtmlZoom(1);
-  }, [selection?.path]);
+  const [files, setFiles] = useState(!documentPath);
+  const htmlZoom = selection?.view.htmlZoom ?? 1;
+  const reloadRevision = selection?.revision;
   const [state, setState] = useState<{
     loading: boolean;
     error?: string;
@@ -42,6 +57,10 @@ export function DocumentPanel({ host, workspaceId, theme, layout }: PluginWorksp
     prepare = useRpc(prepareDocument),
     chunk = useRpc(readDocumentChunk),
     asset = useRpc(readPdfAsset);
+  // SDK callbacks can be refreshed with host context; reading-position updates
+  // must not remount the frame or start another download.
+  const rpcRef = useRef({ prepare, chunk, asset });
+  rpcRef.current = { prepare, chunk, asset };
   const directory = useQuery({
     queryKey: ["documents-list", host.id, workspaceId, folder],
     queryFn: () => list({ workspaceId, path: folder }),
@@ -49,7 +68,8 @@ export function DocumentPanel({ host, workspaceId, theme, layout }: PluginWorksp
     retry: false,
   });
   useEffect(() => {
-    if (!selection) return;
+    const selection = documents.get(key);
+    if (!selection || selection.revision !== reloadRevision) return;
     setFiles(false);
     if (layout.platform !== "web") {
       setState({ loading: false, error: "문서 미리보기는 데스크톱·웹에서 지원합니다." });
@@ -58,12 +78,16 @@ export function DocumentPanel({ host, workspaceId, theme, layout }: PluginWorksp
     let alive = true;
     setState({ loading: true });
     void (async () => {
-      const prepared = await prepare({ workspaceId, path: selection.path, page: selection.page });
+      const prepared = await rpcRef.current.prepare({
+        workspaceId,
+        path: selection.path,
+        page: selection.view.page,
+      });
       const chunks: string[] = [];
       let offset = 0;
       while (offset < prepared.bytes) {
         if (!alive) return;
-        const part = await chunk({ workspaceId, id: prepared.id, offset });
+        const part = await rpcRef.current.chunk({ workspaceId, id: prepared.id, offset });
         chunks.push(part.base64);
         offset = part.next;
       }
@@ -85,7 +109,7 @@ export function DocumentPanel({ host, workspaceId, theme, layout }: PluginWorksp
     return () => {
       alive = false;
     };
-  }, [selection, workspaceId, layout.platform, prepare, chunk]);
+  }, [key, reloadRevision, workspaceId, layout.platform]);
   useEffect(
     () =>
       state.html
@@ -94,15 +118,17 @@ export function DocumentPanel({ host, workspaceId, theme, layout }: PluginWorksp
             state.html,
             state.name ?? "문서",
             state.kind ?? "html",
-            (kind, name) => asset({ kind, name }),
+            (kind, name) => rpcRef.current.asset({ kind, name }),
             (href) => {
-              const target = selection && documentLink(selection.path, href);
-              if (target) selectDocument(key, target.path, target.page);
+              const target = documentPath && documentLink(documentPath, href);
+              if (target) openRef.current(target.path, target.page);
             },
-            setHtmlZoom,
+            (scale) => documents.updateView(key, { htmlZoom: scale }),
+            documents.get(key)?.view,
+            (view) => documents.updateView(key, view),
           )
         : undefined,
-    [state.html, state.name, state.kind, asset, selection, key],
+    [state.html, state.name, state.kind, documentPath, key],
   );
   useEffect(() => {
     if (state.html) updateHtmlZoom(frame.current, htmlZoom);
@@ -139,26 +165,32 @@ export function DocumentPanel({ host, workspaceId, theme, layout }: PluginWorksp
         {button(files ? "파일 닫기" : "파일 선택", () => setFiles(!files))}
         {state.kind === "html" ? (
           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-            {button("HTML 축소", () => setHtmlZoom((value) => nextHtmlZoom(value, -0.1)), "−")}
+            {button(
+              "HTML 축소",
+              () => documents.updateView(key, { htmlZoom: nextHtmlZoom(htmlZoom, -0.1) }),
+              "−",
+            )}
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={t("HTML 배율 초기화")}
-              onPress={() => setHtmlZoom(1)}
+              onPress={() => documents.updateView(key, { htmlZoom: 1 })}
               style={{ padding: 7 }}
             >
               <Text style={{ color: color.foreground, fontSize: 13 }}>
                 {Math.round(htmlZoom * 100)}%
               </Text>
             </Pressable>
-            {button("HTML 확대", () => setHtmlZoom((value) => nextHtmlZoom(value, 0.1)), "+")}
+            {button(
+              "HTML 확대",
+              () => documents.updateView(key, { htmlZoom: nextHtmlZoom(htmlZoom, 0.1) }),
+              "+",
+            )}
           </View>
         ) : null}
         <Text numberOfLines={1} style={{ flex: 1, color: color.foreground, fontSize: 14 }}>
-          {state.name ?? selection?.path ?? "HTML · PDF"}
+          {selection?.path ?? state.name ?? "HTML · PDF"}
         </Text>
-        {selection
-          ? button("새로고침", () => selectDocument(key, selection.path, selection.page))
-          : null}
+        {selection ? button("새로고침", () => documents.reload(key)) : null}
       </View>
       <View style={{ flex: 1, flexDirection: layout.compact ? "column" : "row" }}>
         {files ? (
@@ -193,8 +225,8 @@ export function DocumentPanel({ host, workspaceId, theme, layout }: PluginWorksp
                   onPress={() => {
                     if (entry.directory) setFolder(entry.path);
                     else {
-                      selectDocument(key, entry.path);
-                      setFiles(false);
+                      openRef.current(entry.path);
+                      if (documentPath) setFiles(false);
                     }
                   }}
                   style={{

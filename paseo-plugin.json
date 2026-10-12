@@ -1,7 +1,7 @@
 {
   "id": "paseo-document-viewer",
   "name": "Document viewer",
-  "description": "Read local HTML and PDF documents inside Paseo.",
+  "description": "Read local HTML and PDF documents in separate Paseo workspace tabs.",
   "media": ["assets/preview.png"],
   "requirements": {
     "paseo": ">=0.11.2 <0.12.0"

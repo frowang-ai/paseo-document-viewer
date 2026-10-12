@@ -11,18 +11,18 @@ Standalone preview of the shipped panel component, using the bundled sample file
 Requires **Paseo 0.11.2–0.11.x**, Node.js 22.22 or later, and npm on the daemon host.
 
 ```sh
-paseo plugin add git:no-carve-only-pizza/paseo-document-viewer --ref v0.2.0
+paseo plugin add git:no-carve-only-pizza/paseo-document-viewer --ref v0.3.0
 ```
 
 You can also paste that Git source into Settings → Plugins. Installation downloads the locked npm dependencies and prepares the PDF engine. No extra Chromium download or separate web server is needed.
 
 ## Use
 
-- Click an HTML or PDF file in the file tree. It opens in the Documents tab.
+- Click an HTML or PDF file in the file tree. Each file opens in its own workspace tab beside agents and terminals. Opening the same file again focuses its existing tab.
 - For HTML, use **− / percentage / +** to zoom from **50% to 300%**. Clicking the percentage resets it to 100%. Ctrl/Cmd with +, − or 0 also works while the document has focus. Zoom does not reload the document.
 - HTML styles, images, fonts and classic scripts are included from the document's own folder. LaTeX is rendered locally as SVG. Relative links to PDF files preserve `#page=N`.
 - For PDF, use page navigation, zoom, fit width, text selection and search. Passwords are used only to open the document and are not saved.
-- Choose file opens a folder browser. Reload reads the current file again. The client remembers the last document path per workspace, not its contents.
+- Choose file opens a folder browser and opens the chosen file in another tab. Reload reads the current file again. Page, zoom and scroll position are kept separately for every file, including after closing and reopening its tab or reloading the app.
 
 Controls use English or Korean according to the browser/system language. See [한국어 안내](README.ko.md).
 
@@ -35,6 +35,8 @@ The existing file-tree connection uses a version-scoped DOM adapter because Pase
 HTML resources must resolve inside the document folder, including after resolving symlinks. Remote CDNs, API-dependent pages and ES modules are not loaded. PDF files up to 64 MiB are supported. PDF resources are prepared locally and delivered through Paseo's existing connection.
 
 Documents run in an opaque-origin iframe. Inline scripts can run, but cannot read the Paseo parent DOM, cookies or storage. External resource requests, forms and nested frames are blocked. As with Paseo's built-in preview, browser policy cannot completely prevent a document from navigating its own frame. There is no telemetry or analytics.
+
+Paseo manages tab placement and closing. The plugin saves up to 128 recent document paths and their reading positions in this client's browser storage, scoped by host and workspace. Document contents and PDF passwords are not saved there.
 
 ## Support
 

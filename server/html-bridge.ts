@@ -2,6 +2,11 @@
 export const HTML_BRIDGE = String.raw`
 (() => {
   let zoom = 1;
+  let pendingScroll;
+  const restoreScroll = () => {
+    if (!pendingScroll || !innerWidth || !innerHeight) return;
+    scrollTo(pendingScroll.x,pendingScroll.y);pendingScroll=undefined;
+  };
   const applyZoom = (value) => {
     if (typeof value !== 'number' || !Number.isFinite(value)) return;
     zoom = Math.round(Math.min(3, Math.max(0.5, value)) * 10) / 10;
@@ -10,7 +15,19 @@ export const HTML_BRIDGE = String.raw`
   };
   addEventListener('message', event => {
     if(event.source === parent && event.data?.channel === 'paseo-doc-zoom') applyZoom(event.data.scale);
+    if(event.source === parent && event.data?.channel === 'paseo-doc-restore') {
+      const view=event.data.view;if(!view)return;
+      applyZoom(view.htmlZoom);
+      if(Number.isFinite(view.scrollX)&&Number.isFinite(view.scrollY)) {
+        pendingScroll={x:Math.max(0,view.scrollX),y:Math.max(0,view.scrollY)};
+        requestAnimationFrame(restoreScroll);
+      }
+    }
   });
+  addEventListener('resize',()=>requestAnimationFrame(restoreScroll));
+  addEventListener('scroll',()=>{
+    parent.postMessage({channel:'paseo-doc-view-state',view:{scrollX,scrollY}},'*');
+  },{passive:true});
   document.addEventListener('keydown', event => {
     if (!(event.ctrlKey || event.metaKey) || /INPUT|TEXTAREA/.test(event.target.tagName)) return;
     if (['+','=','-','0'].includes(event.key)) {
