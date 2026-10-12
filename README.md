@@ -36,6 +36,10 @@ HTML resources must resolve inside the document folder, including after resolvin
 
 Documents run in an opaque-origin iframe. Inline scripts can run, but cannot read the Paseo parent DOM, cookies or storage. External resource requests, forms and nested frames are blocked. As with Paseo's built-in preview, browser policy cannot completely prevent a document from navigating its own frame. There is no telemetry or analytics.
 
+## Support
+
+If you find this plugin useful, you can [support its development on GitHub Sponsors](https://github.com/sponsors/no-carve-only-pizza). One-time and monthly sponsorships start at $1, and you can choose your own amount.
+
 ## Development
 
 ```sh

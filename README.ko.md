@@ -20,3 +20,7 @@ paseo plugin add git:no-carve-only-pizza/paseo-document-viewer --ref v0.2.0
 데스크톱·웹용입니다. 원본 파일을 수정하지 않으며 별도 서버나 Chromium을 설치할 필요가 없습니다. 외부 CDN·API·ES module 웹 앱은 지원하지 않고, HTML 자산은 문서 폴더 안으로 제한합니다. PDF 크기 제한은 64 MiB입니다.
 
 기존 파일 목록 연결은 Paseo 0.11용 DOM 어댑터입니다. 앱 구조가 바뀌면 호환성 확인이 필요하며, 별도 문서 패널에서도 파일을 선택할 수 있습니다. 자세한 경계와 개발 명령은 [영문 안내](README.md)를 참조하세요.
+
+## 후원
+
+플러그인이 도움이 됐다면 [GitHub Sponsors로 개발을 후원](https://github.com/sponsors/no-carve-only-pizza)할 수 있습니다. 일회성·월 정기 후원은 $1부터 가능하며 원하는 금액을 직접 입력할 수도 있습니다.
