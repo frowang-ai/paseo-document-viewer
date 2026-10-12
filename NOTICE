@@ -1,0 +1,6 @@
+Document viewer for Paseo
+Copyright 2026 no-carve-only-pizza
+
+This project uses PDF.js and MathJax under Apache-2.0, and Cheerio under MIT.
+PDF.js includes third-party CMaps, fonts and WebAssembly components with
+additional notices. Their license texts are reproduced in licenses/.

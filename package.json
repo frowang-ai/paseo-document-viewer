@@ -1,0 +1,63 @@
+{
+  "name": "paseo-document-viewer",
+  "private": true,
+  "version": "0.2.0",
+  "files": [
+    "paseo-plugin.json",
+    "OVERVIEW.md",
+    "README.md",
+    "index.client.tsx",
+    "index.server.ts",
+    "client/",
+    "server/",
+    "shared/",
+    "viewer/",
+    "scripts/",
+    "assets/",
+    "README.ko.md",
+    "LICENSE",
+    "NOTICE",
+    "licenses/",
+    "examples/"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "node scripts/build.mjs",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "format:check": "biome format ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.13",
+    "@getpaseo/plugin": "0.11.2",
+    "@tanstack/react-query": "^5.90.11",
+    "@types/node": "24.19.2",
+    "@types/react": "~19.2.0",
+    "react": "19.1.0",
+    "react-native": "0.81.5",
+    "tsx": "4.20.6",
+    "typescript": "^5.9.3",
+    "zod": "^4.4.3"
+  },
+  "dependencies": {
+    "cheerio": "1.2.0",
+    "mathjax-full": "3.2.2",
+    "pdfjs-dist": "6.4.299",
+    "esbuild": "0.25.12"
+  },
+  "type": "module",
+  "overrides": {
+    "@xmldom/xmldom": "0.9.12"
+  },
+  "license": "Apache-2.0",
+  "description": "Read local HTML and PDF documents inside Paseo, with HTML zoom, math rendering and PDF search.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no-carve-only-pizza/paseo-document-viewer.git"
+  },
+  "author": "no-carve-only-pizza",
+  "engines": {
+    "node": ">=22.22.0"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.13/schema.json",
+  "files": {
+    "includes": [
+      "**",
+      "!assets",
+      "!node_modules",
+      "!verification",
+      "!package-lock.json",
+      "!server/paths.generated.ts",
+      "!server/assets.generated.ts",
+      "!.local"
+    ]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "linter": {
+    "enabled": true
+  }
+}

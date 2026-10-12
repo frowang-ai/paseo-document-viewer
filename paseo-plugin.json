@@ -1,0 +1,10 @@
+{
+  "id": "paseo-document-viewer",
+  "name": "Document viewer",
+  "description": "Read local HTML and PDF documents inside Paseo.",
+  "media": ["assets/preview.png"],
+  "requirements": {
+    "paseo": ">=0.11.2 <0.12.0"
+  },
+  "build": [["node", "scripts/prepare.mjs"]]
+}

@@ -1,0 +1,53 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Count 2 /Kids [5 0 R 7 0 R] >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Length 248 >>
+stream
+BT
+60 750 Td /F1 32 Tf (Document viewer) Tj
+0 -36 Td /F1 17 Tf (HTML and PDF in one Paseo workspace tab.) Tj
+0 -36 Td /F1 17 Tf (Use the toolbar to move between pages, zoom,) Tj
+0 -36 Td /F1 17 Tf (fit the page width, select text and search.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 259 >>
+stream
+BT
+60 750 Td /F1 32 Tf (Local documents) Tj
+0 -36 Td /F1 17 Tf (This is the second page of the bundled demo.) Tj
+0 -36 Td /F1 17 Tf (Search for local documents to find this page.) Tj
+0 -36 Td /F1 17 Tf (The PDF is generated from public example content.) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000121 00000 n 
+0000000191 00000 n 
+0000000490 00000 n 
+0000000616 00000 n 
+0000000926 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+1052
+%%EOF

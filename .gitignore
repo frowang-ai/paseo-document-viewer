@@ -1,0 +1,13 @@
+node_modules/
+assets/pdf-viewer.html
+server/paths.generated.ts
+verification/
+server/assets.generated.ts
+.local/
+*.tgz
+.DS_Store
+.env
+.env.*
+!.env.example
+.npmrc
+.paseo/
