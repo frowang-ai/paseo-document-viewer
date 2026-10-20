@@ -54,7 +54,7 @@
   "description": "Read local HTML and PDF documents inside Paseo, with HTML zoom, math rendering and PDF search.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/no-carve-only-pizza/paseo-document-viewer.git"
+    "url": "https://github.com/frowang-ai/paseo-document-viewer.git"
   },
   "author": "no-carve-only-pizza",
   "engines": {

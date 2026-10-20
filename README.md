@@ -1,6 +1,6 @@
 # Document viewer for Paseo
 
-This checkout contains a small Paseo 0.12 compatibility patch to [no-carve-only-pizza/paseo-document-viewer](https://github.com/no-carve-only-pizza/paseo-document-viewer). The original implementation, license and attribution are retained.
+This fork contains a small Paseo 0.12 compatibility patch to [no-carve-only-pizza/paseo-document-viewer](https://github.com/no-carve-only-pizza/paseo-document-viewer). The original implementation, license and attribution are retained.
 
 Read local HTML and PDF files in a Paseo workspace tab. Open a document from the existing file tree, the Documents sidebar button, or the Command Center.
 
@@ -10,16 +10,15 @@ Standalone preview of the shipped panel component, using the bundled sample file
 
 ## Install
 
-This modified checkout supports **Paseo 0.11.2–0.12.x** on both the daemon and the client, including a 0.11.x daemon with a 0.12.x client. The daemon host needs Node.js 22.22 or later and npm.
+This fork supports **Paseo 0.11.2–0.12.x** on both the daemon and the client, including a 0.11.x daemon with a 0.12.x client. The daemon host needs Node.js 22.22 or later and npm.
 
-Prepare and install this directory on the daemon host:
+Install this fork on the daemon host:
 
 ```sh
-node scripts/prepare.mjs
-paseo plugin install /absolute/path/to/paseo-document-viewer
+paseo plugin add git:frowang-ai/paseo-document-viewer
 ```
 
-You can also paste that directory path into Settings → Plugins. The upstream `v0.3.0` Git release still excludes Paseo 0.12; use this modified directory for 0.12 support. Preparation downloads the locked npm dependencies and prepares the PDF engine. No extra Chromium download or separate web server is needed.
+You can also paste that Git source into Settings → Plugins. The upstream `v0.3.0` Git release still excludes Paseo 0.12; use this fork for 0.12 support. Installation downloads the locked npm dependencies and prepares the PDF engine. No extra Chromium download or separate web server is needed.
 
 Connected desktop and web clients load the viewer from the selected daemon. PDF files are read from that host's workspace and transferred through the existing Paseo connection; the viewing computer does not need another plugin installation.
 

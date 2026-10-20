@@ -8,11 +8,10 @@ Paseo 안에서 HTML과 PDF를 읽는 커뮤니티 플러그인입니다. 파일
 
 이 수정본은 데몬과 클라이언트에서 Paseo 0.11.2–0.12.x를 지원하며, 0.11.x 데몬에 0.12.x 클라이언트로 연결할 수 있습니다. 데몬 컴퓨터에는 Node.js 22.22 이상과 npm이 필요합니다.
 
-데몬 컴퓨터에서 이 디렉터리를 준비하고 설치하세요. 원본 `v0.3.0` Git 릴리스에는 0.12 지원이 포함되어 있지 않습니다.
+데몬 컴퓨터에서 이 포크를 설치하세요. 원본 `v0.3.0` Git 릴리스에는 0.12 지원이 포함되어 있지 않습니다.
 
 ```sh
-node scripts/prepare.mjs
-paseo plugin install /absolute/path/to/paseo-document-viewer
+paseo plugin add git:frowang-ai/paseo-document-viewer
 ```
 
 다른 컴퓨터의 데스크톱·웹 클라이언트는 선택한 데몬에서 뷰어를 받아 실행합니다. PDF는 해당 호스트의 워크스페이스에서 읽고 기존 Paseo 연결로 전송하므로, 보는 컴퓨터에 플러그인을 따로 설치할 필요가 없습니다.
