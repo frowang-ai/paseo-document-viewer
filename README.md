@@ -27,7 +27,7 @@ Connected desktop and web clients load the viewer from the selected daemon. PDF 
 - Click an HTML or PDF file in the file tree. Each file opens in its own workspace tab beside agents and terminals. Opening the same file again focuses its existing tab.
 - For HTML, use **− / percentage / +** to zoom from **50% to 300%**. Clicking the percentage resets it to 100%. Ctrl/Cmd with +, − or 0 also works while the document has focus. Zoom does not reload the document.
 - HTML styles, images, fonts and classic scripts are included from the document's own folder. LaTeX is rendered locally as SVG. Relative links to PDF files preserve `#page=N`.
-- For PDF, use page navigation, zoom, fit width, text selection and search. Passwords are used only to open the document and are not saved.
+- For PDF, scroll vertically through consecutive pages. The page field follows your reading position; the arrows and page field still jump directly to a page. Zoom, fit width, text selection and search are available. Fit width uses the widest page so mixed portrait/landscape documents stay within the viewport. Only pages near the viewport are rendered to limit memory use. Passwords are used only to open the document and are not saved.
 - Choose file opens a folder browser and opens the chosen file in another tab. Reload reads the current file again. Page, zoom and scroll position are kept separately for every file, including after closing and reopening its tab or reloading the app.
 
 Controls use English or Korean according to the browser/system language. See [한국어 안내](README.ko.md).
