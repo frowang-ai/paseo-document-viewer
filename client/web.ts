@@ -97,7 +97,7 @@ export async function activeWorkspace(host: string): Promise<string> {
   throw new Error("워크스페이스를 먼저 선택하세요.");
 }
 
-/** Version-scoped adapter for 0.11.2's existing file tree; no app internals or React fibers. */
+/** DOM adapter shared by Paseo 0.11.x and 0.12.x; no app internals or React fibers. */
 export function captureDocumentClicks(
   host: string,
   open: (workspace: string, path: string) => void,

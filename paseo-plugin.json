@@ -4,7 +4,7 @@
   "description": "Read local HTML and PDF documents in separate Paseo workspace tabs.",
   "media": ["assets/preview.png"],
   "requirements": {
-    "paseo": ">=0.11.2 <0.12.0"
+    "paseo": ">=0.11.2 <0.13.0"
   },
   "build": [["node", "scripts/prepare.mjs"]]
 }

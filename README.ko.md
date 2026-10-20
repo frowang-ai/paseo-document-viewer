@@ -6,11 +6,16 @@ Paseo 안에서 HTML과 PDF를 읽는 커뮤니티 플러그인입니다. 파일
 
 ## 설치
 
-데몬 컴퓨터에 Paseo 0.11.2–0.11.x, Node.js 22.22 이상과 npm이 필요합니다.
+이 수정본은 데몬과 클라이언트에서 Paseo 0.11.2–0.12.x를 지원하며, 0.11.x 데몬에 0.12.x 클라이언트로 연결할 수 있습니다. 데몬 컴퓨터에는 Node.js 22.22 이상과 npm이 필요합니다.
+
+데몬 컴퓨터에서 이 디렉터리를 준비하고 설치하세요. 원본 `v0.3.0` Git 릴리스에는 0.12 지원이 포함되어 있지 않습니다.
 
 ```sh
-paseo plugin add git:no-carve-only-pizza/paseo-document-viewer --ref v0.3.0
+node scripts/prepare.mjs
+paseo plugin install /absolute/path/to/paseo-document-viewer
 ```
+
+다른 컴퓨터의 데스크톱·웹 클라이언트는 선택한 데몬에서 뷰어를 받아 실행합니다. PDF는 해당 호스트의 워크스페이스에서 읽고 기존 Paseo 연결로 전송하므로, 보는 컴퓨터에 플러그인을 따로 설치할 필요가 없습니다.
 
 ## 보기
 
@@ -23,7 +28,7 @@ paseo plugin add git:no-carve-only-pizza/paseo-document-viewer --ref v0.3.0
 
 데스크톱·웹용입니다. 원본 파일을 수정하지 않으며 별도 서버나 Chromium을 설치할 필요가 없습니다. 외부 CDN·API·ES module 웹 앱은 지원하지 않고, HTML 자산은 문서 폴더 안으로 제한합니다. PDF 크기 제한은 64 MiB입니다.
 
-기존 파일 목록 연결은 Paseo 0.11용 DOM 어댑터입니다. 앱 구조가 바뀌면 호환성 확인이 필요하며, 별도 문서 패널에서도 파일을 선택할 수 있습니다. 자세한 경계와 개발 명령은 [영문 안내](README.md)를 참조하세요.
+기존 파일 목록 연결은 Paseo 0.11·0.12 공통 DOM 어댑터입니다. 앱 구조가 바뀌면 호환성 확인이 필요하며, 별도 문서 패널에서도 파일을 선택할 수 있습니다. 자세한 경계와 개발 명령은 [영문 안내](README.md)를 참조하세요.
 
 ## 후원
 
